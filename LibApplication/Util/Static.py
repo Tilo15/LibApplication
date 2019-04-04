@@ -2,12 +2,12 @@
 def WithReferenceOwner(obj):
     '''Wrapper around an object that injects the instance that the object was retreived from into every function call of the class'''
     class ReferenceOwned(obj):
-        def __init__(self, *args):
+        def __init__(*args):
             # Construct the object
-            self.obj = obj(*args)
+            obj.__init__(*args)
 
         def __get__(self, instance, owner):
-            return ClassWithInstance(self.obj, instance)
+            return ClassWithInstance(self, instance)
 
     return ReferenceOwned
 
