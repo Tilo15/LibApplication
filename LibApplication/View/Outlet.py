@@ -7,7 +7,7 @@ class Outlet(object):
         self.ui_id = ui_id
 
 
-    def show_view(self, instance, view):
+    def _get_builder(self, instance):
         # Get builder
         builder = getattr(instance, "_builder", None)
 
@@ -15,13 +15,19 @@ class Outlet(object):
         if(builder == None):
             raise TypeError("Outlets can only exist on classes with a '@View' decorator.")
 
+        return builder
+
+
+    def display(self, instance, view):
+        builder = self._get_builder()
+
         # Get the GTK component
         outlet = builder.get_object(self.ui_id)
 
         # Remove any children
         children = outlet.get_children()
         for child in children:
-            outler.remove(child)
+            outlet.remove(child)
 
         # Add view
         outlet.add(view._root)

@@ -5,7 +5,7 @@ from LibApplication.View.Outlet import Outlet
 
 from gi.repository import Gtk
 
-import child
+import child, bean
 
 @View("test.glade", "window1")
 class MyWindow:
@@ -29,15 +29,16 @@ class MyWindow:
 
         if(self.count == 10):
             child_view = child.ChildView()
-            self.viewport.show_view(child_view)
+            self.viewport.display(child_view)
+
+        if(self.count == 20):
+            child_view = bean.ChildView()
+            self.viewport.display(child_view)
 
         self.count += 1
 
 
 win = MyWindow()
 win._root.show_all();
-
-win2 = MyWindow()
-win2._root.show_all();
 
 Gtk.main()
