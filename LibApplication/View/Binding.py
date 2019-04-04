@@ -3,9 +3,6 @@ from LibApplication.Util.DeferredConstruction import DeferredConstructor
 class Binding(object):
     
     def __init__(self, builder_id, attr):
-        # Save the initial value
-        # self.inital_value = initial_value
-
         # GTK Builder Id
         self.ui_id = builder_id
 
@@ -54,3 +51,33 @@ class Binding(object):
         # Set it
         setf(value)
         
+
+def FormattedBinding(builder_id, attr):
+
+    class BindingFormatter(Binding):
+
+        def __init__(self, func):
+            self.ui_id = builder_id
+            self.attribute = attr
+            self.func = func
+            self.values = {}
+
+        def __get__(self, instance, owner):
+            # Return what was set, rather than the formatted value
+            if(instance in self.values):
+                return self.values[instance]
+
+            return None
+
+        def __set__(self, instance, value):
+            # Format the value
+            formatted = self.func(instance, value)
+
+            # Set the value
+            Binding.__set__(self, instance, formatted)
+
+
+            # Save the value in case __get__ gets called
+            self.values[instance] = value
+
+    return BindingFormatter

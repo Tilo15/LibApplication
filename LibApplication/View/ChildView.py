@@ -1,10 +1,9 @@
-from LibApplication.Util.Static import WithReferenceOwner
 
-@WithReferenceOwner
-class Outlet(object):
+class ChildView(object):
 
     def __init__(self, ui_id):
         self.ui_id = ui_id
+        self.views = {}
 
 
     def get_component(self, instance):
@@ -18,12 +17,12 @@ class Outlet(object):
         return builder.get_object(self.ui_id)
 
 
-    def display(self, instance, view):
+    def __set__(self, instance, view):
         # Get the GTK component
-        outlet = self.get_component()
+        outlet = self.get_component(instance)
 
         # Reset view
-        self.reset()
+        self.reset(outlet)
 
         # Add view
         outlet.add(view._root)
@@ -31,12 +30,22 @@ class Outlet(object):
         # Show
         view._root.show_all()
 
-    def reset(self, instance):
-        # Get the GTK component
-        outlet = self.get_component()
+        # Keep reference to view
+        self.views[instance] = view
 
+
+    def reset(self, outlet):
         # Remove children
         children = outlet.get_children()
         for child in children:
             outlet.remove(child)
+
+    
+    def __get__(self, instance, owner):
+        if(instance in self.views):
+            return self.views[instance]
+        else:
+            return None
+
+    
 

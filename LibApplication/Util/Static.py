@@ -15,7 +15,7 @@ def WithReferenceOwner(obj):
 class ClassWithInstance(object):
 
     def __init__(self, obj, instance):
-        # Construct object
+        # Get base object
         base = super()
 
         # Set "obj" and "instance" attributes
