@@ -35,7 +35,3 @@ def View(path, root_id):
     return decorator
 
 
-
-
-        
-
