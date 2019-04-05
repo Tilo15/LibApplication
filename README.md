@@ -22,7 +22,7 @@ At this stage, this list may change around a bit. These are the currently planne
     - [ ] Http (python-requests)
     - [ ] User storage
     - [ ] DBus
-  - [ ] Integration with libraries build with LibMedium
+  - [ ] Integration with libraries built with LibMedium
 - [ ] App
   - [ ] Configuration
   - [ ] File open notifications
