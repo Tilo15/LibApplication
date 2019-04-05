@@ -30,6 +30,21 @@ def View(path, root_id):
                 # Connect signals
                 self._builder.connect_signals(self)
 
+
+            @staticmethod
+            def bulk(arg_list):
+                # New array
+                views = []
+
+                # Loop over each set of arguments
+                for args in arg_list:
+                    # Create the view
+                    views.append(ViewComponent(*args))
+
+                # Return the views
+                return views
+
+
         return ViewComponent
 
     return decorator

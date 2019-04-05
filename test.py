@@ -14,7 +14,7 @@ class MyWindow:
     title = Binding("title", "text")
     show_list = Binding("list_reveal", "reveal_child")
     viewport = ChildView("viewport")
-    list_view = ChildViews("list", list_item.ChildView)
+    list_view = ChildViews("list")
 
     def __init__(self):
         self.count = 0
@@ -43,12 +43,28 @@ class MyWindow:
                 ("Here, I'll prove it", "See?")
             ]
 
-            self.list_view = array
+            self.list_view = list_item.ChildView.bulk(array)
             self.show_list = True
 
-            print(self.list_view.title)
+            print(self.list_view)
 
         self.count += 1
+
+        if(self.count == 6):
+            del self.list_view[2]
+
+        if(self.count == 8):
+            self.list_view.add(list_item.ChildView("I was added later", "I'm special"))
+            self.list_view.select_row(self.list_view[3])
+
+        if(self.count == 12):
+            self.list_view.unselect_all()
+
+        if(self.count == 31):
+            self.show_list = False
+
+        if(self.count == 32):
+            self.list_view.reset()
 
 
     @FormattedBinding("subtitle", "text")
