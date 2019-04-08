@@ -48,5 +48,3 @@ def View(path, root_id):
         return ViewComponent
 
     return decorator
-
-

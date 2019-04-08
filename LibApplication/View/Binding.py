@@ -81,3 +81,32 @@ def FormattedBinding(builder_id, attr):
             self.values[instance] = value
 
     return BindingFormatter
+
+
+
+class IconBinding(Binding):
+
+    def __init__(self, builder_id, size):
+        self.ui_id = builder_id
+        self.size = size
+        self.values = {}
+
+    def __get__(self, instance, owner):
+        # Return what was set, rather than the formatted value
+        if(instance in self.values):
+            return self.values[instance]
+
+        return None
+
+    def __set__(self, instance, value):
+        # Get the GTK Image object
+        gtk_obj = Binding.get_component(self, instance)
+
+        # Set
+        gtk_obj.set_from_icon_name(value, self.size)
+
+        # Save the value in case __get__ gets called
+        self.values[instance] = value
+
+
+# TODO Image binding (Ie. From File (and perhaps from Pixbuf))

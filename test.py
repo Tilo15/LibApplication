@@ -3,6 +3,7 @@ from LibApplication.View import View
 from LibApplication.View.Binding import Binding, FormattedBinding
 from LibApplication.View.ChildView import ChildView
 from LibApplication.View.ChildViews import ChildViews
+from LibApplication.Stock.Views.ProgressWindow import ProgressWindow
 
 from gi.repository import Gtk
 
@@ -18,6 +19,7 @@ class MyWindow:
 
     def __init__(self):
         self.count = 0
+        self.progress = ProgressWindow()
 
     def hello_world(self, sender):
         if(self.count == 0):
@@ -62,9 +64,29 @@ class MyWindow:
 
         if(self.count == 31):
             self.show_list = False
+            self.progress.icon = "computer"
 
         if(self.count == 32):
             self.list_view.reset()
+
+        if(self.count == 3):
+            self.progress._root.show_all()
+            self.progress.icon = "software-update-available"
+            self.progress.heading = "Yeet"
+            self.progress.subheading = "Skadeet"
+            self.progress.show_prompt = False
+
+        if(self.count > 3):
+            self.progress.progress = self.count / 40.0
+            self.progress.title = "Operating System Installer"
+
+        if(self.count == 40):
+            self.progress.prompt = bean.ChildView()
+            self.progress.show_prompt = True
+
+        if(self.count == 50):
+            self.count = 0
+
 
 
     @FormattedBinding("subtitle", "text")
@@ -73,8 +95,8 @@ class MyWindow:
     
 
 
-for i in range(5):
-    win = MyWindow()
-    win._root.show_all();
+
+win = MyWindow()
+win._root.show_all();
 
 Gtk.main()
