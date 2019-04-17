@@ -1,10 +1,9 @@
-from LibApplication.View import View
+from LibApplication.View.Window import WindowView
 from LibApplication.View.Binding import Binding, FormattedBinding, IconBinding
 from LibApplication.View.ChildView import ChildView
 
-@View("LibApplication/Stock/Views/ProgressWindow/ProgressWindow.glade", "window")
+@WindowView("LibApplication/Stock/Views/ProgressWindow/ProgressWindow.glade", "window")
 class ProgressWindow:
-    title = Binding("window", "title")
     heading = Binding("heading", "text")
     subheading = Binding("subheading", "text")
     icon = IconBinding("icon", 48)

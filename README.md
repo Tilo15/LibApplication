@@ -15,7 +15,7 @@ At this stage, this list may change around a bit. These are the currently planne
     - [ ] Functionality for filtering items
   - [ ] Stock views
   - [ ] Event support
-  - [ ] Special support for toplevels
+  - [x] Special support for toplevels
 - [ ] Services
   - [ ] Dependancy injection
   - [ ] Stock services

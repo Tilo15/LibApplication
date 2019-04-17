@@ -70,7 +70,7 @@ class MyWindow:
             self.list_view.reset()
 
         if(self.count == 3):
-            self.progress._root.show_all()
+            self.progress.show()
             self.progress.icon = "software-update-available"
             self.progress.heading = "Yeet"
             self.progress.subheading = "Skadeet"
@@ -83,9 +83,11 @@ class MyWindow:
         if(self.count == 40):
             self.progress.prompt = bean.ChildView()
             self.progress.show_prompt = True
+            self.progress.maximize()
 
         if(self.count == 50):
             self.count = 0
+            self.progress.maximize(False)
 
 
 
