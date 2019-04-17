@@ -1,21 +1,25 @@
 
-from LibApplication.View import View
+from LibApplication.View.Window import WindowView
 from LibApplication.View.Binding import Binding, FormattedBinding
 from LibApplication.View.ChildView import ChildView
 from LibApplication.View.ChildViews import ChildViews
+
 from LibApplication.Stock.Views.ProgressWindow import ProgressWindow
+from LibApplication.Stock.Services.Http import HttpService
 
 from gi.repository import Gtk
 
 import child, bean, list_item
 
-@View("test.glade", "window1")
+@WindowView("test.glade", "window1")
 class MyWindow:
 
     title = Binding("title", "text")
     show_list = Binding("list_reveal", "reveal_child")
     viewport = ChildView("viewport")
     list_view = ChildViews("list")
+
+    http = HttpService
 
     def __init__(self):
         self.count = 0
@@ -94,11 +98,10 @@ class MyWindow:
     @FormattedBinding("subtitle", "text")
     def subtitle(self, value):
         return "You've clicked the Hello World button %i times!" % self.count
-    
 
 
+    def get_something(self, sender):
+        self.http.get("http://api.geonet.org.nz/intensity?type=measured").subscribe(self.print_response)
 
-win = MyWindow()
-win._root.show_all();
-
-Gtk.main()
+    def print_response(self, response):
+        print(response)

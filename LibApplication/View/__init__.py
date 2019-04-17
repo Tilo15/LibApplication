@@ -44,6 +44,10 @@ def View(path, root_id):
                 # Return the views
                 return views
 
+            def __del__(self):
+                # Destroy
+                self._root.destroy()
+
 
         return ViewComponent
 

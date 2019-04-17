@@ -39,8 +39,12 @@ class ChildViews(object):
             if(parent != None):
                 parent.remove(view._root)
             
+            while Gtk.events_pending():
+                Gtk.main_iteration_do(True)
+
             outlet.add(view._root)
             view._root.show_all()
+
 
         # Save views
         self.outlets[instance] = outlet
