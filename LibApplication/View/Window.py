@@ -1,5 +1,6 @@
 from LibApplication.View import View
 from LibApplication.View.Binding import Binding
+from LibApplication.Util.Static import WithReferenceOwner
 
 def WindowView(path, root_id):
 
@@ -51,6 +52,8 @@ def WindowView(path, root_id):
 
             def show(self, state = True):
                 if(state):
+                    self._modal = False
+                    self._root.set_transient_for(None)
                     self._root.show_all()
                 else:
                     self._root.hide()
@@ -60,6 +63,18 @@ def WindowView(path, root_id):
 
             def complete(self):
                 self._root.close()
+
+            def show_modal(self, attachment):
+                # TODO Tidy Up
+                self._modal = True
+                # Does it have a parent window?
+                parent = attachment._root.get_parent_window()
+                if(parent != None):
+                    self._root.set_transient_for(parent)
+                else:
+                    self._root.set_transient_for(attachment._root)
+
+                self._root.show_all()
 
             def __del__(self):
                 self.complete()

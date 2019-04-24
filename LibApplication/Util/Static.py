@@ -47,5 +47,6 @@ class ClassWithInstance(object):
         return item
 
     def __setattr__(self, attr, value):
-        obj = super().base.__getattr__("obj")
+        base = super()
+        obj = base.__getattribute__("obj")
         setattr(obj, attr, value)

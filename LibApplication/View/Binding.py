@@ -1,4 +1,6 @@
 from LibApplication.Util.DeferredConstruction import DeferredConstructor
+import weakref
+
 
 class Binding(object):
     
@@ -60,7 +62,7 @@ def FormattedBinding(builder_id, attr):
             self.ui_id = builder_id
             self.attribute = attr
             self.func = func
-            self.values = {}
+            self.values = weakref.WeakKeyDictionary()
 
         def __get__(self, instance, owner):
             # Return what was set, rather than the formatted value
@@ -89,7 +91,7 @@ class IconBinding(Binding):
     def __init__(self, builder_id, size):
         self.ui_id = builder_id
         self.size = size
-        self.values = {}
+        self.values = weakref.WeakKeyDictionary()
 
     def __get__(self, instance, owner):
         # Return what was set, rather than the formatted value
@@ -110,3 +112,25 @@ class IconBinding(Binding):
 
 
 # TODO Image binding (Ie. From File (and perhaps from Pixbuf))
+class PixbufBinding(Binding):
+
+    def __init__(self, builder_id):
+        self.ui_id = builder_id
+        self.values = weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        # Return what was set, rather than the formatted value
+        if(instance in self.values):
+            return self.values[instance]
+
+        return None
+
+    def __set__(self, instance, value):
+        # Get the GTK Image object
+        gtk_obj = Binding.get_component(self, instance)
+
+        # Set
+        gtk_obj.set_from_pixbuf(value)
+
+        # Save the value in case __get__ gets called
+        self.values[instance] = value

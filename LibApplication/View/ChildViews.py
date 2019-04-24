@@ -2,13 +2,15 @@ from LibApplication.View import View
 
 from gi.repository import Gtk
 
+import weakref
+
 
 class ChildViews(object):
     
     def __init__(self, ui_id):
         self.ui_id = ui_id
-        self.outlets = {}
-        self.view_mapping = {}
+        self.outlets = weakref.WeakKeyDictionary()
+        self.view_mapping = weakref.WeakKeyDictionary()
 
 
     def __set__(self, instance, values):
@@ -50,7 +52,7 @@ class ChildViews(object):
         self.outlets[instance] = outlet
 
         # Save a map of root objects to views
-        self.view_mapping[instance] = {}
+        self.view_mapping[instance] = weakref.WeakKeyDictionary()
         for view in views:
             self.view_mapping[instance][view._root] = view
 
@@ -163,6 +165,10 @@ class ChildViewsOutlet(object):
 
     def __iter__(self):
         return iter(self.children)
+
+    
+    def __len__(self):
+        return len(self.children)
 
 
     def __getitem__(self, key):

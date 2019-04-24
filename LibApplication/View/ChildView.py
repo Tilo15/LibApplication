@@ -1,9 +1,11 @@
+import weakref
+
 
 class ChildView(object):
 
     def __init__(self, ui_id):
         self.ui_id = ui_id
-        self.views = {}
+        self.views = weakref.WeakKeyDictionary()
 
 
     def get_component(self, instance):
