@@ -58,11 +58,9 @@ class FileWindow:
             for item in filter_items:
                 if("*" in item):
                     gtk_filter.add_pattern(item)
-                    print(item)
                 else:
                     gtk_filter.add_mime_type(item)
-
-            print(gtk_filter)
+                    
             self._root.add_filter(gtk_filter)
 
     
@@ -76,10 +74,8 @@ class FileWindow:
             if(not self.file.endswith(self.extension)):
                 self.file += self.extension
 
-            print(self.file)
-
             if(os.path.exists(self.file)):
-                msg = MessageBox("A file named “%s” already exists" % self.file.split("/")[-1], "The filename you have chosen conflicts with an already existing file. Are you sure you want to overwrite the contents of this file?", ["Cancel", "Overwrite"])
+                msg = MessageBox("A file named “%s” already exists" % self.file.split("/")[-1], "The filename you have chosen conflicts with an already existing file. Continuing will overwrite its contents.", ["Cancel", "Overwrite"])
                 msg.dismissed.subscribe(self._confirm)
                 msg.show_modal(self)
 

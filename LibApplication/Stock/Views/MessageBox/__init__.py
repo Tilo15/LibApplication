@@ -9,7 +9,7 @@ from gi.repository import Gtk
 class MessageBox:
 
     def __init__(self, heading, subheading, buttons = ["Okay"]):
-        self._root.set_markup("<b>%s</b>" % heading)
+        self._root.set_markup("<b><big>%s</big></b>" % heading)
         self._root.format_secondary_markup(subheading)
         self._buttons = {}
 
@@ -23,7 +23,6 @@ class MessageBox:
     @Event
     def dismissed(self, sender):
         self.hide()
-        print(self._buttons, sender)
         if(sender in self._buttons):
             return self._buttons[sender]
         else:
