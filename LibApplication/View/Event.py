@@ -1,5 +1,6 @@
 import weakref
 import rx
+import inspect
 
 
 class Event(object):
@@ -15,7 +16,9 @@ class Event(object):
 
         class EventProxy(object):
             def __call__(*args):
-                result = self.func(instance)
+                sig = inspect.signature(self.func)
+                # Only pass as many as the function can take
+                result = self.func(instance, *args[1:len(sig.parameters)])
                 self.subjects[instance].on_next(result)
 
             def __getattribute__(proxy, name):
