@@ -3,10 +3,10 @@ from LibApplication.Loop.Task import Task
 
 def AsTask(target_loop):
     def decorator(func):
-        def wrapper(*args):
+        def wrapper(*args, **kwargs):
         
             # Create a task
-            task = Task(func, *args)
+            task = Task(func, *args, **kwargs)
 
             # Return the observable
             return target_loop.add(task)

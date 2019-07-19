@@ -6,6 +6,7 @@ from LibApplication.View.ChildViews import ChildViews
 
 from LibApplication.Stock.Views.ProgressWindow import ProgressWindow
 from LibApplication.Stock.Services.Http import HttpService
+from LibApplication.Stock.Services.PinEntry import PinEntryService
 
 from gi.repository import Gtk
 
@@ -20,6 +21,7 @@ class MyWindow:
     list_view = ChildViews("list")
 
     http = HttpService
+    pin_entry = PinEntryService
 
     def __init__(self):
         self.count = 0
@@ -42,6 +44,9 @@ class MyWindow:
             self.viewport = bean.ChildView()
 
         if(self.count == 2):
+
+            self.pin_entry.get_pin("Unlock identity 'Billy Barrow'", "In order to continue, you must unlock identity information for your 'Billy Barrow' profile.").subscribe(lambda x: print(x))
+
             array = [
                 ("Item 1", "This is a cool item"),
                 ("Item 2", "This is a cooler item"),
