@@ -9,4 +9,4 @@ class ApplicationService:
 
     def register(self, application):
         self.application = application
-        self.namesapce = application.app_info.namespace
+        self.namespace = application.app_info.namespace

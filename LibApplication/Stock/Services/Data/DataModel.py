@@ -6,7 +6,11 @@ class DataModel(object):
     def __init__(self):
         self.__modified = False
 
-    def _set_state(self, dictionary):
+    def _set_state(self, dictionary, what = None):
         # Set up our data
+        print(self)
+        print(dictionary)
+        print(what)
+        print("---")
         self.__dict__ = dictionary
 

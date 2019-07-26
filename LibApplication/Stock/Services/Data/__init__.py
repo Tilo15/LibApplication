@@ -27,8 +27,15 @@ class DataService:
             self.data_types[data_type.__name__] = data_type
 
         self.operations_loop.begin_new_thread()
-        self.namespace = self.application_service.namespace
-        self.__db = dbm.gnu.open("todo_move_me_{0}".format(self.namespace), 'cf')
+        self.___db = None
+        self.loaded_items = {}
+
+    @property
+    def __db(self):
+        if(self.___db == None):
+            self.___db = dbm.gnu.open("todo_move_me_{0}".format(self.application_service.namespace), 'cf')
+
+        return self.___db
 
     def register_model(self, model):
         self.data_types[model.__name__] = model
@@ -124,7 +131,7 @@ class DataService:
     def decapsulate(self, capsule: Capsule):
         if(capsule.type == "struct"):
             # This object is a reference to another object
-            return NavigationalDataProxy(capsule.value, self)
+            return NavigationalDataProxy(capsule.value, self, self.read_type(capsule.value))
 
         if(capsule.type in self.data_types):
             # Get it
@@ -172,6 +179,10 @@ class DataService:
             raise TypeError("Unknown type {0} encountered in stored data".format(capsule.type))
     
     def read_object(self, key):
+        # Do we have it already?
+        if(key in self.loaded_items):
+            return self.loaded_items[key]
+
         # Get it from the db
         data = self.__db[key]
 
@@ -181,6 +192,20 @@ class DataService:
         # Get the object
         return self.decapsulate(capsule)
 
+    def read_type(self, key):
+        # Get it from the db
+        data = self.__db[key]
+
+        # Get the capsule
+        capsule = Capsule.from_string(data.decode("UTF-8"))
+
+        # Do we have this type?
+        if(capsule.type in self.data_types):
+            return self.data_types[capsule.type]
+
+        raise TypeError("Unknown type {0} encountered in stored data".format(capsule.type))
+
+
 
     def test(self):
         c, r = self.encapsulate(B())
@@ -188,7 +213,8 @@ class DataService:
 
         o = self.read_object(r.bytes)
         print(o.prim)
-        print(o.obj.age)
+        print(o.friends[0])
+        print(o.obj)
         print(len(o.dictionary))
 
 
@@ -203,6 +229,9 @@ class A(DataModel):
     def __init__(self):
         self.age = 19
         self.name = "Billy" 
+
+    # def __str__(self):
+    #     return "{0} ({1})".format(self.name, self.age)
 
 @Persistable
 class B(DataModel):
