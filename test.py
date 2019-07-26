@@ -7,6 +7,7 @@ from LibApplication.View.ChildViews import ChildViews
 from LibApplication.Stock.Views.ProgressWindow import ProgressWindow
 from LibApplication.Stock.Services.Http import HttpService
 from LibApplication.Stock.Services.PinEntry import PinEntryService
+from LibApplication.Stock.Services.Data import DataService
 
 from gi.repository import Gtk
 
@@ -22,6 +23,7 @@ class MyWindow:
 
     http = HttpService
     pin_entry = PinEntryService
+    data = DataService
 
     def __init__(self):
         self.count = 0
@@ -31,6 +33,8 @@ class MyWindow:
         if(self.count == 0):
             self.title = "Hello world for the first time!"
             self.count = 1
+            self.data.test()
+
 
         else:
             self.title = "Hello world #%i" % self.count
@@ -42,6 +46,7 @@ class MyWindow:
 
         if(self.count == 20):
             self.viewport = bean.ChildView()
+            self.lock.Lock()
 
         if(self.count == 2):
 

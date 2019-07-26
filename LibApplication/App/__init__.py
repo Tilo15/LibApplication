@@ -1,12 +1,19 @@
 from LibApplication.Loop.GLib import GLibLoop
+from LibApplication.Stock.Services.Application import ApplicationService
 
 class Application:
 
+    application_service = ApplicationService
+    app_info = None
+
     def __init__(self):
+        # Register the application
+        self.application_service.register(self)
+
         # Prepare loop
         self.loop = GLibLoop()
 
-        # Run any preparations
+        # Run preparations
         self.prepare()
 
         # Run startup tasks

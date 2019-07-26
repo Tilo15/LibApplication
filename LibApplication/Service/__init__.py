@@ -7,6 +7,9 @@ class ServiceSpawner(object):
         self.instanciated = False
 
     def __get__(self, instance, owner):
+        return self.get_instance()
+
+    def get_instance(self):
         if(not self.instanciated):
             self.instance = self.clas()
             self.instanciated = True
