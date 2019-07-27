@@ -131,7 +131,10 @@ class DataService:
     def decapsulate(self, capsule: Capsule):
         if(capsule.type == "struct"):
             # This object is a reference to another object
-            return NavigationalDataProxy(capsule.value, self, self.read_type(capsule.value))
+            print("pre {0}".format(self.read_type(capsule.value)))
+            nav =  NavigationalDataProxy(capsule.value, self, self.read_type(capsule.value))
+            print("name", nav.name)
+            return nav
 
         if(capsule.type in self.data_types):
             # Get it
@@ -164,13 +167,22 @@ class DataService:
                 # Loop over the dictionary representation of the model
                 for key in capsule.value:
                     # Decapsulate the object
-                    dictionary[key] = self.decapsulate(Capsule.from_dict(capsule.value[key]))
+                    child = self.decapsulate(Capsule.from_dict(capsule.value[key]))
+                    dictionary[key] = child
+                    print(key)
+                    print(Capsule.from_dict(capsule.value[key]))
+                    print(child)
+                    print("---")
 
                 # Create instance of the model
                 model = obj_type()
+                print("!!!", type(dictionary) == str)
 
                 # Allow the model to set up its values
                 model._set_state(dictionary)
+                print("did it")
+                print(model)
+
 
                 # Return the model
                 return model
@@ -213,9 +225,9 @@ class DataService:
 
         o = self.read_object(r.bytes)
         print(o.prim)
-        print(o.friends[0])
-        print(o.obj)
-        print(len(o.dictionary))
+        # print(o.friends)
+        print(o.obj.name)
+        # print(len(o.dictionary))
 
 
 # Decorator for registering models
@@ -238,8 +250,8 @@ class B(DataModel):
     def __init__(self):
         self.prim = 1
         self.obj = A()
-        self.friends = [A(), A(), A()]
-        self.dictionary = {
-            "Hello": "world",
-            "Best Friend": self.obj
-        }
+        #self.friends = [A(), A(), A()]
+        # self.dictionary = {
+        #     "Hello": "world",
+        #     #"Best Friend": self.obj
+        # }
