@@ -2,6 +2,9 @@ from LibApplication.Util import DeferredConstruction
 
 from gi.repository import Gtk
 
+import os
+import sys
+
 def View(path, root_id):
 
     # Create the decorator function
@@ -15,8 +18,14 @@ def View(path, root_id):
                 # Create a builder
                 self._builder = Gtk.Builder()
 
+                # Get the path of the current module
+                module_path = os.path.abspath(sys.modules[obj.__module__].__file__)
+                
+                # Get the directory
+                directiory = os.path.dirname(module_path)
+
                 # Build the UI from XML
-                self._builder.add_from_file(path)
+                self._builder.add_from_file(os.path.join(directiory, path))
 
                 # Get the root object
                 self._root = self._builder.get_object(root_id)

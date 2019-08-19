@@ -5,7 +5,7 @@ from LibApplication.View.Event import Event
 from gi.repository import Gtk
 
 
-@WindowView("LibApplication/Stock/Views/MessageBox/MessageBox.glade", "root")
+@WindowView("MessageBox.glade", "root")
 class MessageBox:
 
     def __init__(self, heading, subheading, buttons = ["Okay"]):

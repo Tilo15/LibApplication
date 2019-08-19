@@ -16,7 +16,7 @@ import child, bean, list_item
 @WindowView("test.glade", "window1")
 class MyWindow:
 
-    title = Binding("title", "text")
+    heading = Binding("title", "text")
     show_list = Binding("list_reveal", "reveal_child")
     viewport = ChildView("viewport")
     list_view = ChildViews("list")
@@ -31,13 +31,13 @@ class MyWindow:
 
     def hello_world(self, sender):
         if(self.count == 0):
-            self.title = "Hello world for the first time!"
+            self.heading = "Hello world for the first time!"
             self.count = 1
             self.data.test()
 
 
         else:
-            self.title = "Hello world #%i" % self.count
+            self.heading = "Hello world #%i" % self.count
 
         self.subtitle = self.count
 

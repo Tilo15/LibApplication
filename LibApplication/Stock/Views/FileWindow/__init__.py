@@ -12,7 +12,7 @@ FILE_DIALOG_OPEN = 1
 FILE_DIALOG_FOLDER = 2
 FILE_DIALOG_OPEN_MANY = 3
 
-@WindowView("LibApplication/Stock/Views/FileWindow/FileWindow.glade", "root")
+@WindowView("FileWindow.glade", "root")
 class FileWindow:
     options = ChildView("child")
     file = Binding("root", "filename")
