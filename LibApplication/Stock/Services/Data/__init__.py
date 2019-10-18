@@ -32,11 +32,12 @@ class DataService:
         self.___db = None
         self.loaded_items = {}
         self.db_refs = {}
+        self._data_path = "todo_move_me_{0}".format(self.application_service.namespace)
 
     @property
     def __db(self):
         if(self.___db == None):
-            self.___db = dbm.gnu.open("todo_move_me_{0}".format(self.application_service.namespace), 'cf')
+            self.___db = dbm.gnu.open(self._data_path, 'cf')
 
         return self.___db
 

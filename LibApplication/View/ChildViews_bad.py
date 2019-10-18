@@ -41,8 +41,8 @@ class ChildViews(object):
             if(parent != None):
                 parent.remove(view._root)
             
-            # while Gtk.events_pending():
-            #     Gtk.main_iteration_do(True)
+            while Gtk.events_pending():
+                Gtk.main_iteration_do(True)
 
             outlet.add(view._root)
             view._root.show_all()
@@ -55,17 +55,13 @@ class ChildViews(object):
         self.view_mapping[instance] = weakref.WeakKeyDictionary()
         for view in views:
             self.view_mapping[instance][view._root] = view
-        
-        # print([str(x) for x in self.view_mapping[instance]])
 
 
     def __get__(self, instance, owner):
         if(instance in self.view_mapping):
             return ChildViewsOutlet(self, instance)
 
-        self.set_views([], instance)
-        return ChildViewsOutlet(self, instance)
-
+        return None
 
 
 class ChildViewsOutlet(object):
@@ -77,13 +73,34 @@ class ChildViewsOutlet(object):
 
     def _handle_get(self, widget):
         # If the result is a GTK object
+        print(widget, [str(x) for x in self._views.view_mapping[self._instance].keys()])
         if(isinstance(widget, Gtk.Widget)):
             # Check if the widget is in the view mapping
             if(widget in self._views.view_mapping[self._instance]):
                 return self._views.view_mapping[self._instance][widget]
 
-            # Unwrap until we find the right one
-            return self._handle_get(widget.get_child())
+            # Can we unwrap using get_child()?
+            if(hasattr(widget, "get_child")):
+                # Unwrap until we find the right one
+                return self._handle_get(widget.get_child())
+            
+            # Does the object have many children (happens in list boxes)
+            elif(hasattr(widget, "get_children")):
+                # Try all children until we find one
+                for child in widget.get_children():
+                    # Try and get the handle
+                    handle = self._handle_get(child)
+
+                    # Did it work?
+                    if(handle != None):
+                        return handle
+
+                # Nothing more to try
+                return None
+
+            else:
+                # Nothing more to try
+                return None
 
         return widget
 
