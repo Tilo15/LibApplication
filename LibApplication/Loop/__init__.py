@@ -4,7 +4,6 @@ from LibApplication.Loop.Service import LoopService
 import rx
 
 
-
 class Loop:
 
     loop_service = LoopService
@@ -30,6 +29,32 @@ class Loop:
     def register(self):
         self.loop_service.register(self)
 
+    def wait_for(self, observable: rx.Observable):
+        # Completed status
+        completed = False
+
+        # Observable value
+        value = None
+
+        # Callback for when our task is completed
+        def callback(v):
+            nonlocal completed
+            nonlocal value
+            completed = True
+            value = v
+
+        # Subscribe to the observable
+        observable.subscribe(callback)
+
+        # Keep doing things until we are done
+        while not completed:
+            self.do_next()
+
+        # Done, get the value
+        return value
+
+
+
     def run(self, call, *args):
         raise NotImplementedError
 
@@ -37,5 +62,8 @@ class Loop:
         raise NotImplementedError
 
     def begin(self):
+        raise NotImplementedError
+
+    def do_next(self):
         raise NotImplementedError
 

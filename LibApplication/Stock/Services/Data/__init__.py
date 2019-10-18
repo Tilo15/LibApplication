@@ -230,21 +230,6 @@ class DataService:
     def get_root_id(self):
         return self.__db[b"rootref"]
 
-    def test(self):
-        b = B()
-        b.obj.name = "John-William"
-        c, r = self.encapsulate(b)
-        self.save_capsules(c, r)
-
-        o = self.read_object(r.bytes)
-        print(o.prim)
-        print(o.friends)
-        print(o.obj)
-        print(o.dictionary)
-        print(o.dictionary)
-        print(o.dictionary["Best Friend"])
-
-
     @AsTask(operations_loop)
     def get(self):
         # Get the root object's ID
@@ -282,23 +267,3 @@ def Persistable(model):
     service = DataService.get_instance()
     service.register_model(model)
     return model
-
-@Persistable
-class A(DataModel):
-    def __init__(self):
-        self.age = 19
-        self.name = "Billy" 
-
-    def __str__(self):
-        return "{0} ({1})".format(self.name, self.age)
-
-@Persistable
-class B(DataModel):
-    def __init__(self):
-        self.prim = 1
-        self.obj = A()
-        self.friends = [A(), A(), A()]
-        self.dictionary = {
-            "Hello": "world",
-            "Best Friend": self.obj
-        }

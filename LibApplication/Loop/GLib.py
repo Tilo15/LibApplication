@@ -15,3 +15,6 @@ class GLibLoop(Loop):
 
     def run(self, call, *args):
         GLib.idle_add(call, *args)
+
+    def do_next(self):
+        Gtk.main_iteration_do(True)

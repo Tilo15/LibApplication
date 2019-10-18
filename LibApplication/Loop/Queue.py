@@ -19,15 +19,7 @@ class QueueLoop(Loop):
 
         # Start doin it
         while self.alive:
-            # Read from queue
-            task = self.queue.get()
-
-            # Try and run the task
-            try:
-                task[0](*task[1])
-            except Exception as e:
-                print("\nException occurred inside QueueLoop:")
-                traceback.print_exc()
+            self.do_next();
 
 
     def stop(self):
@@ -45,3 +37,14 @@ class QueueLoop(Loop):
 
     def begin_new_thread(self):
         threading.Thread(target=self.begin).start()
+
+    def do_next(self):
+        # Read from queue
+        task = self.queue.get()
+
+        # Try and run the task
+        try:
+            task[0](*task[1])
+        except Exception as e:
+            print("\nException occurred inside QueueLoop:")
+            traceback.print_exc()

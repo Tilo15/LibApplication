@@ -2,10 +2,9 @@ import weakref
 import rx
 import inspect
 
-
 class Event(object):
 
-    def __init__(self, func):
+    def __init__(self, func = lambda x, y: y):
         self.func = func
         self.subjects = weakref.WeakKeyDictionary()
 

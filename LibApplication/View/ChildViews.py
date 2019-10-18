@@ -226,4 +226,11 @@ class ChildViewsOutlet(object):
         # Update the ChildViews
         self._views.set_views(items, self._instance)
 
+    def index(self, view):
+        # Get the array
+        items = self.children
+
+        # Find the item
+        return items.index(view)
+
     
