@@ -30,6 +30,10 @@ class Loop:
         self.loop_service.register(self)
 
     def wait_for(self, observable: rx.Observable):
+        # Error if not on this loop
+        if(self != self.loop_service.get_loop()):
+            raise Exception("Loop.wait_for can only be called from the thread that the loop is running on.")
+
         # Completed status
         completed = False
 

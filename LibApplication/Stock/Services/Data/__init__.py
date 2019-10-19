@@ -67,7 +67,7 @@ class DataService:
             identity: uuid.UUID = touched[id(obj)]
 
             # Save it to our identity tracker
-            self.db_refs[id(obj)] = identity.bytes
+            self.db_refs[id(obj)] = identity
 
             # TODO look at also saving this to loaded_items at this point too
 
@@ -202,7 +202,6 @@ class DataService:
             raise TypeError("Unknown type {0} encountered in stored data".format(capsule.type))
     
     def read_object(self, key):
-        print("call")
         # Do we have it already?
         if(key in self.loaded_items):
             return self.loaded_items[key]
@@ -222,13 +221,75 @@ class DataService:
         self.loaded_items[key] = obj
         
         # Save db ref
-        self.db_refs[id(obj)] = key
+        self.db_refs[id(obj)] = uuid.UUID(bytes=key)
 
         # Return to caller
         return obj
 
     def get_root_id(self):
         return self.__db[b"rootref"]
+
+    
+    def find_linked_capsules(self, start):
+        # Include the first id
+        yield start
+
+        # Get the data for the capsule
+        data = self.__db[start]
+
+        # Get the capsule
+        capsule = Capsule.from_string(data.decode("UTF-8"))
+
+        # Create an iterator
+        iterator = []
+
+        if(isinstance(capsule.value, dict)):
+            iterator = capsule.value.keys()
+
+        else:
+            iterator = range(len(capsule.value))
+
+        # Iterate over every item in the capsule
+        for member in iterator:
+            # Is it a structure?
+            if(capsule.value[member]["type"] == "struct"):
+                # No, follow down the rabbit hole
+                for identifier in self.find_linked_capsules(capsule.value[member]["value"]):
+                    yield identifier
+
+
+    @AsTask(operations_loop)
+    def clean(self):
+        # Store all found ids
+        found = set()
+
+        # Get the first key in the database
+        key = self.__db.firstkey()
+
+        # Iterate over the keys until there are no more
+        while(key != None):
+            # If it's an object id (len == 16)
+            if(len(key) == 16):
+                # Add the key to the found set
+                found.add(key)
+
+            # Get the next key
+            key = self.__db.nextkey(key)
+
+        # Find items linked to root
+        linked = set(self.find_linked_capsules(self.get_root_id()))
+
+        # Get all found IDs that are not linked
+        to_clean = found.difference(linked)
+
+        # Delete unlinked values
+        for item in to_clean:
+            del self.__db[item]
+
+        # Reogranise and sync the database
+        self.__db.reorganize()
+        self.__db.sync()
+
 
     @AsTask(operations_loop)
     def get(self):
@@ -246,6 +307,9 @@ class DataService:
 
         # Save the capsules, updating the root id
         self.save_capsules(capsules, obj_id)
+
+        # Clean the db
+        self.operations_loop.wait_for(self.clean())
 
     @AsTask(operations_loop)
     def save(self, obj):

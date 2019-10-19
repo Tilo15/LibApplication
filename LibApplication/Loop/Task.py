@@ -11,11 +11,15 @@ class Task:
 
     def run(self, observer: rx.Observer):
         # Is it a generator?
-        if (inspect.isgeneratorfunction(self.call)):
-            for item in self.call(*self.args, **self.kwargs):
-                observer.on_next(item)
+        try:
+            if (inspect.isgeneratorfunction(self.call)):
+                for item in self.call(*self.args, **self.kwargs):
+                    observer.on_next(item)
 
-        else:
-            observer.on_next(self.call(*self.args, **self.kwargs))
+            else:
+                observer.on_next(self.call(*self.args, **self.kwargs))
+
+        except Exception as e:
+            observer.on_error(e)
 
         observer.on_completed()
