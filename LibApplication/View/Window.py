@@ -1,6 +1,8 @@
 from LibApplication.View import View
 from LibApplication.View.Binding import Binding
-from LibApplication.Util.Static import WithReferenceOwner
+from LibApplication.Stock.Services.Application import ApplicationService
+
+import rx
 
 def WindowView(path, root_id):
 
@@ -10,10 +12,10 @@ def WindowView(path, root_id):
         view = View(path, root_id)
 
         # Get base view class
-        viewComponent = view(obj)
+        view_component = view(obj)
 
         # Extend the base class
-        class TopLevelViewComponent(viewComponent):
+        class TopLevelViewComponent(view_component):
             
             _modal = Binding(root_id, 'modal')
 
@@ -22,6 +24,13 @@ def WindowView(path, root_id):
             title = Binding(root_id, 'title')
             urgent = Binding(root_id, 'urgency_hint')
 
+            def __init__(self, *args, **kwargs):
+                # Call the base class's init
+                view_component.__init__(self, *args, **kwargs)
+
+                # Register the window with the application service
+                ApplicationService.get_instance().add_window(self)
+                
 
             def fullscreen(self, state = True):
                 if(state):
@@ -54,7 +63,7 @@ def WindowView(path, root_id):
                 if(state):
                     self._modal = False
                     self._root.set_transient_for(None)
-                    self._root.show_all()
+                    self._root.show()
                 else:
                     self._root.hide()
 
@@ -63,6 +72,7 @@ def WindowView(path, root_id):
 
             def complete(self):
                 self._root.close()
+                self._root.destroy()
 
             def show_modal(self, attachment):
                 # TODO Tidy Up
@@ -74,7 +84,7 @@ def WindowView(path, root_id):
                 else:
                     self._root.set_transient_for(attachment._root)
 
-                self._root.show_all()
+                self._root.show()
 
             def __del__(self):
                 self.complete()

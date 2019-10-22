@@ -21,3 +21,9 @@ class LoopService:
 
         # Return loop
         return self.loops[thread]
+
+    def shutdown(self):
+        # Loop through each loop
+        for loop in self.loops.values():
+            # Tell it to stop
+            loop.stop()

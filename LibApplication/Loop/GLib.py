@@ -18,3 +18,6 @@ class GLibLoop(Loop):
 
     def do_next(self):
         Gtk.main_iteration_do(True)
+
+    def is_alive(self):
+        return Gtk.main_level() > 0

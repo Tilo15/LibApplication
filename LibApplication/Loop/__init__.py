@@ -3,7 +3,6 @@ from LibApplication.Loop.Service import LoopService
 
 import rx
 
-
 class Loop:
 
     loop_service = LoopService
@@ -19,7 +18,7 @@ class Loop:
             # Create an observer proxy
             proxy = ObserverProxy(observer, reply_loop)
 
-            # Run the task wiht the observer proxy
+            # Run the task with the observer proxy
             self.run(task.run, proxy)
 
         # Return the observable
@@ -51,8 +50,12 @@ class Loop:
         observable.subscribe(callback)
 
         # Keep doing things until we are done
-        while not completed:
+        while not completed and self.is_alive():
             self.do_next()
+
+        # Did it complete?
+        if(not completed):
+            raise Exception("Loop.wait_for was canceled as the loop has been stopped.")
 
         # Done, get the value
         return value
@@ -70,4 +73,8 @@ class Loop:
 
     def do_next(self):
         raise NotImplementedError
+
+    def is_alive(self):
+        raise NotImplementedError
+
 

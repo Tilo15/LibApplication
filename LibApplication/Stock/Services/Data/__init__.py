@@ -254,8 +254,7 @@ class DataService:
             # Is it a structure?
             if(capsule.value[member]["type"] == "struct"):
                 # No, follow down the rabbit hole
-                for identifier in self.find_linked_capsules(capsule.value[member]["value"]):
-                    yield identifier
+                yield from self.find_linked_capsules(capsule.value[member]["value"])
 
 
     @AsTask(operations_loop)

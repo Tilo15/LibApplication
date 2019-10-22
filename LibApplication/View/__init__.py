@@ -13,7 +13,7 @@ def View(path, root_id):
         class ViewComponent(obj):
             
             # Constructor
-            def __init__(self, *args):
+            def __init__(self, *args, **kwargs):
 
                 # Create a builder
                 self._builder = Gtk.Builder()
@@ -31,7 +31,7 @@ def View(path, root_id):
                 self._root = self._builder.get_object(root_id)
 
                 # Run the base constructor
-                obj.__init__(self, *args)
+                obj.__init__(self, *args, **kwargs)
 
                 # Run any defered constructors
                 # DeferredConstruction.construct_all(self)

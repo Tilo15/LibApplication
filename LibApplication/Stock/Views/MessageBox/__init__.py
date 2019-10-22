@@ -9,6 +9,7 @@ from gi.repository import Gtk
 class MessageBox:
 
     def __init__(self, heading, subheading, buttons = ["Okay"]):
+        print(heading, subheading, buttons)
         self._root.set_markup("<b><big>%s</big></b>" % heading)
         self._root.format_secondary_markup(subheading)
         self._buttons = {}
@@ -16,6 +17,7 @@ class MessageBox:
         button_box = self._builder.get_object("buttons")
         for i, button in enumerate(buttons):
             gtk_button = Gtk.Button(button)
+            gtk_button.show()
             button_box.add(gtk_button)
             self._buttons[gtk_button] = i
             gtk_button.connect("clicked", self.dismissed)

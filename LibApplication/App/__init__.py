@@ -36,3 +36,7 @@ class Application:
     def ready(self):
         # Optionally Overridden
         pass
+
+    def close(self):
+        # Optionally Overridden
+        pass

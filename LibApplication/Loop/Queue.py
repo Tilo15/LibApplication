@@ -34,6 +34,8 @@ class QueueLoop(Loop):
         # Put the call and the arguments into the queue
         self.queue.put((call, args))
 
+    def is_alive(self):
+        return self.alive
 
     def begin_new_thread(self):
         threading.Thread(target=self.begin).start()
