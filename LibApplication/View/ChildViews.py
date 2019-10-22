@@ -164,7 +164,7 @@ class ChildViewsOutlet(object):
             return setf([self._handle_set(x) for x in value])
 
         # Call the setter
-        return getf(self._handle_set(value))
+        return setf(self._handle_set(value))
 
 
     def __iter__(self):
