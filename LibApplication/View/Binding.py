@@ -1,164 +1,93 @@
-from LibApplication.Util.DeferredConstruction import DeferredConstructor
+from LibApplication.View.Bindings import BaseBinding
+from LibApplication.View.Bindings.IconBinding import IconBinding
+from LibApplication.View.Bindings.SpinnerBinding import SpinnerBinding
+
 import weakref
 
 
-class Binding(object):
+BINDING_TYPES = [IconBinding, SpinnerBinding]
+
+class Binding(BaseBinding):
     
-    def __init__(self, builder_id, attr):
+    def __init__(self, builder_id, attr, **kwargs):
         # GTK Builder Id
         self.ui_id = builder_id
 
         # Attribute to set on GTK component
         self.attribute = attr
 
+        # Additional arguments
+        self.arguments = kwargs
 
-    def get_component(self, instance):
-        # ui_id can be a function for getting the widget
-        if(callable(self.ui_id)):
-            return self.ui_id(instance)
+        self.binding = None
+        self.formatter = None
+        self.values = weakref.WeakKeyDictionary()
 
-        # Get builder
-        builder = getattr(instance, "_builder", None)
+    def setup(self, instance):
+        # Get the component
+        component = self.get_component(instance)
 
-        # Error if no builder
-        if(builder == None):
-            raise TypeError("View bindings only work on classes decorated with a '@View' decorator.")
+        # Determine the type of binding
+        binding = BaseBinding
+        for item in BINDING_TYPES:
+            try:
+                if(item.is_valid(component, self.attribute, **self.arguments)):
+                    binding = item
+                    break
+            except:
+                pass
 
-        # Get the GTK component
-        return builder.get_object(self.ui_id)
+        # Save the binding
+        self.binding = binding(self.ui_id, self.attribute, **self.arguments)
+
+        # Return the binding
+        return self.binding
+
+    def get_binding(self, instance):
+        # Do we have a binding?
+        if(self.binding != None):
+            return self.binding
+
+        # Setup the binding
+        return self.setup(instance)
 
 
     def __get__(self, instance, owner):
-        # Get the GTK component object
-        gtk_obj = self.get_component(instance)
-
-        # Get the getter function
-        get = getattr(gtk_obj, "get_%s" % self.attribute, None)
-
-        # Make sure result is callable
-        if(not callable(get)):
-            raise TypeError("No '%s' get method on a '%s'" % (self.attribute, type(gtk_obj).__name__))
-
-        # Return the value
-        return get()
-
-
-    def __set__(self, instance, value):
-        # Get the GTK component object
-        gtk_obj = self.get_component(instance)
-
-        # Get the setter function
-        setf = getattr(gtk_obj, "set_%s" % self.attribute, None)
-
-        # Make sure result is callable
-        if(not callable(setf)):
-            raise TypeError("No '%s' set method on a '%s'" % (self.attribute, type(gtk_obj).__name__))
-
-        # Set it
-        setf(value)
-        
-
-def FormattedBinding(builder_id, attr):
-
-    class BindingFormatter(Binding):
-
-        def __init__(self, func):
-            self.ui_id = builder_id
-            self.attribute = attr
-            self.func = func
-            self.values = weakref.WeakKeyDictionary()
-
-        def __get__(self, instance, owner):
-            # Return what was set, rather than the formatted value
+        # Are we using a formatter function?
+        if(self.formatter != None):
+            # Do we have a value for this instance?
             if(instance in self.values):
                 return self.values[instance]
 
+            # Return None
             return None
 
-        def __set__(self, instance, value):
-            # Format the value
-            formatted = self.func(instance, value)
+        # Otherwise, use the underlying binding
+        return self.get_binding(instance).__get__(instance, owner)
+        
 
-            # Set the value
-            Binding.__set__(self, instance, formatted)
+    def __set__(self, instance, value):
+        # Hold the augmented value
+        new_value = value
 
+        # Are we using a formatter function?
+        if(self.formatter != None):
+            # Run the value through the formatter
+            new_value = self.formatter(instance, value)
 
-            # Save the value in case __get__ gets called
+            # Update the value stored for this instance
             self.values[instance] = value
 
-    return BindingFormatter
+        # Set the value using the actual binding
+        self.get_binding(instance).__set__(instance, new_value)
 
 
-
-class IconBinding(Binding):
-
-    def __init__(self, builder_id, size):
-        self.ui_id = builder_id
-        self.size = size
-        self.values = weakref.WeakKeyDictionary()
-
-    def __get__(self, instance, owner):
-        # Return what was set, rather than the formatted value
-        if(instance in self.values):
-            return self.values[instance]
-
-        return None
-
-    def __set__(self, instance, value):
-        # Get the GTK Image object
-        gtk_obj = Binding.get_component(self, instance)
-
-        # Set
-        gtk_obj.set_from_icon_name(value, self.size)
-
-        # Save the value in case __get__ gets called
-        self.values[instance] = value
-
-
-# TODO Image binding (Ie. From File (and perhaps from Pixbuf))
-class PixbufBinding(Binding):
-
-    def __init__(self, builder_id):
-        self.ui_id = builder_id
-        self.values = weakref.WeakKeyDictionary()
-
-    def __get__(self, instance, owner):
-        # Return what was set, rather than the formatted value
-        if(instance in self.values):
-            return self.values[instance]
-
-        return None
-
-    def __set__(self, instance, value):
-        # Get the GTK Image object
-        gtk_obj = Binding.get_component(self, instance)
-
-        # Set
-        gtk_obj.set_from_pixbuf(value)
-
-        # Save the value in case __get__ gets called
-        self.values[instance] = value
-
-class SpinnerBinding(Binding):
-    def __init__(self, builder_id):
-        self.ui_id = builder_id
-        self.values = weakref.WeakKeyDictionary()
-
-    def __get__(self, instance, owner):
-        # Return what was set, rather than the formatted value
-        if(instance in self.values):
-            return self.values[instance]
-
-        return None
-
-    def __set__(self, instance, value):
-        # Get the GTK Image object
-        gtk_obj = Binding.get_component(self, instance)
-
-        if(value):
-            gtk_obj.start()
+    def __call__(self, func):
+        # This is decorating a formatter function
+        if(callable(func)):
+            self.formatter = func
+            return self
+        
         else:
-            gtk_obj.stop()
-
-        # Save the value in case __get__ gets called
-        self.values[instance] = value
+            raise Exception("Bindings may only decorate formatter functions")
+        

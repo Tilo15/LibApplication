@@ -1,5 +1,5 @@
 from LibApplication.View.Window import View
-from LibApplication.View.Binding import Binding, FormattedBinding, IconBinding, SpinnerBinding
+from LibApplication.View.Binding import Binding
 from LibApplication.View.ChildView import ChildView
 from LibApplication.View.Event import Event
 
@@ -9,7 +9,7 @@ import rx
 @View("WebView.glade", "root")
 class WebView:
     __title = Binding("title", "text")
-    __is_loading = SpinnerBinding("spinner")
+    __is_loading = Binding("spinner", "active")
 
     can_go_back = Binding("back", "sensitive")
     can_go_forward = Binding("forward", "sensitive")
@@ -18,7 +18,7 @@ class WebView:
     custom_charset = Binding(lambda s: s.webkit, "custom_charset")
     zoom_level = Binding(lambda s: s.webkit, "zoom_level")
 
-    @FormattedBinding("url", "text")
+    @Binding("url", "text")
     def url(self, url):
         if(url != self.webkit.get_uri()):
             self.webkit.load_uri(url)
@@ -64,6 +64,7 @@ class WebView:
 
     @Event
     def go_back(self):
+        print("yeet")
         if(self.can_go_back):
             self.webkit.go_back()
         

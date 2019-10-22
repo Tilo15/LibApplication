@@ -1,5 +1,4 @@
 from LibApplication.View.Window import WindowView
-from LibApplication.View.Binding import Binding, FormattedBinding, IconBinding
 from LibApplication.View.ChildView import ChildView
 from LibApplication.View.ChildViews import ChildViews
 
