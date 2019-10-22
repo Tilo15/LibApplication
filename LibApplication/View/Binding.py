@@ -13,6 +13,10 @@ class Binding(object):
 
 
     def get_component(self, instance):
+        # ui_id can be a function for getting the widget
+        if(callable(self.ui_id)):
+            return self.ui_id(instance)
+
         # Get builder
         builder = getattr(instance, "_builder", None)
 
@@ -131,6 +135,30 @@ class PixbufBinding(Binding):
 
         # Set
         gtk_obj.set_from_pixbuf(value)
+
+        # Save the value in case __get__ gets called
+        self.values[instance] = value
+
+class SpinnerBinding(Binding):
+    def __init__(self, builder_id):
+        self.ui_id = builder_id
+        self.values = weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        # Return what was set, rather than the formatted value
+        if(instance in self.values):
+            return self.values[instance]
+
+        return None
+
+    def __set__(self, instance, value):
+        # Get the GTK Image object
+        gtk_obj = Binding.get_component(self, instance)
+
+        if(value):
+            gtk_obj.start()
+        else:
+            gtk_obj.stop()
 
         # Save the value in case __get__ gets called
         self.values[instance] = value
