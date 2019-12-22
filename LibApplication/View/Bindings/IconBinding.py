@@ -24,7 +24,7 @@ class IconBinding(BaseBinding):
 
     def __set__(self, instance, value):
         # Get the GTK Image object
-        gtk_obj = self.get_component(self, instance)
+        gtk_obj = self.get_component(instance)
 
         # Set
         gtk_obj.set_from_icon_name(value, self.size)
