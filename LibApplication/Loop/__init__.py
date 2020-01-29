@@ -45,6 +45,7 @@ class Loop:
             nonlocal value
             completed = True
             value = v
+            self.run(lambda: None)
 
         # Subscribe to the observable
         observable.subscribe(callback)

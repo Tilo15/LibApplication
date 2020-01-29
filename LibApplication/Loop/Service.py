@@ -11,6 +11,7 @@ class LoopService:
     def register(self, loop):
         # Get current thread
         thread = threading.current_thread()
+        print(loop, thread)
 
         # Save loop
         self.loops[thread] = loop

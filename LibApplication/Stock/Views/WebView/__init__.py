@@ -2,8 +2,9 @@ from LibApplication.View.Window import View
 from LibApplication.View.Binding import Binding
 from LibApplication.View.ChildView import ChildView
 from LibApplication.View.Event import Event
+from LibApplication.Stock.Services.WebKit import WebKitService
 
-from gi.repository import WebKit2
+from gi.repository import WebKit2, Soup
 import rx
 
 @View("WebView.glade", "root")
@@ -18,6 +19,8 @@ class WebView:
     custom_charset = Binding(lambda s: s.webkit, "custom_charset")
     zoom_level = Binding(lambda s: s.webkit, "zoom_level")
 
+    __web_kit_service = WebKitService
+
     @Binding("url", "text")
     def url(self, url):
         if(url != self.webkit.get_uri()):
@@ -25,9 +28,12 @@ class WebView:
     
         return url
 
-    def __init__(self, url="about:blank"):
+    def __init__(self, url="about:blank", profile = None):
+        # Get the webkit context
+        context = self.__web_kit_service.get_context(profile)
+
         # Create the webkit object
-        self.webkit = WebKit2.WebView()
+        self.webkit = WebKit2.WebView.new_with_context(context)
 
         # Attach signals
         self.webkit.connect("load_changed", self.__load_changed)
@@ -97,5 +103,3 @@ class WebView:
             resource.get_data(None, got, None)
 
         return rx.Observable.create(get)
-
-    

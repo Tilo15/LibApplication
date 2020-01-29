@@ -12,6 +12,7 @@ class Application:
 
         # Prepare loop
         self.loop = GLibLoop()
+        self.loop.register()
 
         # Run preparations
         self.prepare()

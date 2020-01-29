@@ -32,7 +32,7 @@ class DataService:
         self.___db = None
         self.loaded_items = {}
         self.db_refs = {}
-        self._data_path = "todo_move_me_{0}".format(self.application_service.namespace)
+        self._data_path = "{}/{}".format(self.application_service.data_path, "objects.db")
 
     @property
     def __db(self):

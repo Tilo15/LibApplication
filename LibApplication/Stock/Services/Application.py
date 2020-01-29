@@ -2,6 +2,8 @@ from LibApplication.Service import Service
 from LibApplication.App.AppInfo import AppInfo
 from LibApplication.Loop.Service import LoopService
 
+import os
+
 @Service
 class ApplicationService:
 
@@ -34,4 +36,13 @@ class ApplicationService:
             # If the function returned None or True, close the application
             if(result == None or result == True):
                 self.loop_service.shutdown()
+
+    @property
+    def data_path(self):
+        path = "todo_move_me_{0}".format(self.namespace)
+
+        if(not os.path.exists(path)):
+            os.mkdir(path)
+
+        return path
 
